@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BetterPlayer — Bet on your own game</title>
+<meta name="description" content="Challenge a player to an EA FC 1v1. Both stake credits, the winner takes the pot. Join the free beta.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pitch: #0F4D3A;
+    --pitch-deep: #0A3527;
+    --chalk: #EEF2EA;
+    --chalk-dim: #B9C8BD;
+    --flood: #FFD23F;
+    --card: #E03A3E;
+    --display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+    --body: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--pitch-deep);
+    color: var(--chalk);
+    font-family: var(--body);
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+  }
+  .pitch {
+    position: relative;
+    overflow: hidden;
+    background:
+      repeating-linear-gradient(90deg, var(--pitch) 0 64px, #11553F 64px 128px);
+  }
+  .pitch svg.lines {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    pointer-events: none; opacity: .22;
+  }
+  .wrap { position: relative; max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+  header.top { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+  .brand { font-family: var(--display); font-weight: 900; font-size: 1.75rem; letter-spacing: .01em; }
+  .brand span { color: var(--flood); }
+  .beta-tag { font-weight: 600; font-size: .875rem; color: var(--pitch-deep); background: var(--flood); padding: 4px 10px; border-radius: 3px; }
+
+  .hero { display: grid; gap: 40px; padding: 24px 0 64px; align-items: center; }
+  @media (min-width: 860px) { .hero { grid-template-columns: 1.1fr .9fr; padding: 48px 0 96px; } }
+
+  h1 {
+    font-family: var(--display); font-weight: 900; text-transform: uppercase;
+    font-size: clamp(3.2rem, 11vw, 6.5rem); line-height: .88; margin: 0 0 20px;
+  }
+  .lede { max-width: 34em; color: var(--chalk-dim); font-size: 1.125rem; margin: 0; }
+
+  /* Scoreboard: the one bold element */
+  .board {
+    background: #06140F; border: 3px solid #1D6B51; border-radius: 10px;
+    padding: 18px 18px 14px; box-shadow: 0 18px 40px rgba(0,0,0,.35);
+    font-family: var(--display);
+  }
+  .board-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; }
+  .team { font-weight: 700; font-size: 1.35rem; text-transform: uppercase; color: var(--chalk-dim); }
+  .team.you { color: var(--chalk); }
+  .team.rival { text-align: right; }
+  .score {
+    font-weight: 900; font-size: clamp(3.4rem, 14vw, 5rem); line-height: 1;
+    color: var(--flood); text-shadow: 0 0 18px rgba(255,210,63,.45);
+    font-variant-numeric: tabular-nums; padding: 0 6px;
+  }
+  .board-foot {
+    display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; padding-top: 12px;
+    border-top: 1px dashed #1D6B51; font-family: var(--body); font-size: .95rem; color: var(--chalk-dim);
+  }
+  .board-foot strong { color: var(--chalk); font-weight: 600; }
+  @media (prefers-reduced-motion: no-preference) {
+    .score .tick { display: inline-block; animation: tick .6s 1.2s both; }
+    @keyframes tick { from { transform: translateY(-40%); opacity: 0; } to { transform: none; opacity: 1; } }
+  }
+
+  section.steps { background: var(--pitch-deep); padding: 64px 0; }
+  h2 { font-family: var(--display); font-weight: 900; font-size: clamp(2rem, 6vw, 3rem); text-transform: uppercase; margin: 0 0 28px; line-height: 1; }
+  ol.flow { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; }
+  @media (min-width: 760px) { ol.flow { grid-template-columns: repeat(3, 1fr); } }
+  ol.flow li { border-left: 3px solid var(--flood); padding-left: 16px; }
+  ol.flow .n { font-family: var(--display); font-weight: 900; font-size: 2.2rem; color: var(--flood); line-height: 1; }
+  ol.flow h3 { margin: 6px 0 6px; font-size: 1.15rem; font-weight: 600; }
+  ol.flow p { margin: 0; color: var(--chalk-dim); max-width: 30em; }
+
+  section.join { padding: 64px 0 80px; }
+  .join-grid { display: grid; gap: 32px; }
+  @media (min-width: 860px) { .join-grid { grid-template-columns: .9fr 1.1fr; } }
+  .join p.note { color: var(--chalk-dim); max-width: 30em; }
+
+  form { background: var(--chalk); color: #10231B; border-radius: 10px; padding: 24px; }
+  .field { margin-bottom: 18px; }
+  label.lbl { display: block; font-weight: 600; margin-bottom: 6px; }
+  .hint { font-weight: 400; color: #4E6158; font-size: .9rem; }
+  input[type=text], input[type=email] {
+    width: 100%; font: inherit; padding: 12px 14px; border: 2px solid #9FB2A7; border-radius: 6px; background: #fff; color: #10231B;
+  }
+  input:focus-visible, button:focus-visible, .seg input:focus-visible + span { outline: 3px solid var(--flood); outline-offset: 2px; border-color: var(--pitch); }
+  fieldset { border: 0; padding: 0; margin: 0 0 18px; }
+  legend { font-weight: 600; margin-bottom: 6px; padding: 0; }
+  .seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .seg label { position: relative; }
+  .seg input { position: absolute; opacity: 0; inset: 0; }
+  .seg span {
+    display: block; text-align: center; padding: 11px 6px; border: 2px solid #9FB2A7; border-radius: 6px; font-weight: 600; cursor: pointer; background: #fff;
+  }
+  .seg input:checked + span { background: var(--pitch); border-color: var(--pitch); color: var(--chalk); }
+  .consent { display: flex; gap: 12px; align-items: flex-start; font-size: .95rem; margin: 6px 0 20px; }
+  .consent input { width: 22px; height: 22px; margin-top: 2px; flex: none; accent-color: var(--pitch); }
+  button.go {
+    width: 100%; font-family: var(--display); font-weight: 900; font-size: 1.5rem; text-transform: uppercase;
+    background: var(--flood); color: #10231B; border: 0; border-radius: 6px; padding: 14px; cursor: pointer;
+  }
+  button.go:disabled { opacity: .6; cursor: wait; }
+  .msg { margin: 14px 0 0; font-weight: 600; min-height: 1.5em; }
+  .msg.err { color: var(--card); }
+  .done { text-align: left; }
+  .done h3 { font-family: var(--display); font-weight: 900; font-size: 2rem; text-transform: uppercase; margin: 0 0 8px; }
+
+  footer { border-top: 1px solid #1D6B51; padding: 32px 0 48px; color: var(--chalk-dim); font-size: .92rem; }
+  footer h4 { color: var(--chalk); margin: 0 0 8px; font-size: 1rem; }
+  footer p { max-width: 60em; margin: 0 0 12px; }
+  footer a { color: var(--flood); }
+  .age { display: inline-block; font-weight: 600; color: var(--chalk); border: 2px solid var(--card); border-radius: 50%; width: 42px; height: 42px; line-height: 38px; text-align: center; margin-right: 10px; }
+</style>
+</head>
+<body>
+
+<div class="pitch">
+  <svg class="lines" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g fill="none" stroke="#EEF2EA" stroke-width="3">
+      <line x1="600" y1="0" x2="600" y2="700"/>
+      <circle cx="600" cy="350" r="110"/>
+      <rect x="0" y="170" width="170" height="360"/>
+      <rect x="1030" y="170" width="170" height="360"/>
+    </g>
+  </svg>
+  <div class="wrap">
+    <header class="top">
+      <div class="brand">Better<span>Player</span></div>
+      <div class="beta-tag">Free beta</div>
+    </header>
+
+    <div class="hero">
+      <div>
+        <h1>Bet on your own game</h1>
+        <p class="lede">Challenge another player to an EA FC 1v1. You both put in credits, you play, and the winner takes the pot. The beta uses free credits only, no real money.</p>
+      </div>
+
+      <div class="board" role="img" aria-label="Example match: You 2, Rival 1. Stake 2 credits each, winner takes 3.20 credits.">
+        <div class="board-row">
+          <div class="team you">You</div>
+          <div class="score"><span class="tick">2</span>–1</div>
+          <div class="team rival">Rival</div>
+        </div>
+        <div class="board-foot">
+          <span>Stake <strong>2 credits</strong> each</span>
+          <span>You take <strong>3.20</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="steps">
+  <div class="wrap">
+    <h2>How a match works</h2>
+    <ol class="flow">
+      <li><div class="n">1</div><h3>Open a room</h3><p>Create a challenge in the app or join one waiting for a player. Your stake is held until the match ends.</p></li>
+      <li><div class="n">2</div><h3>Play the match</h3><p>Add each other by EA ID and play an online friendly. A draw goes to penalties.</p></li>
+      <li><div class="n">3</div><h3>Report the score</h3><p>Both players report the result with a photo of the final screen. The winner is paid automatically.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="join" id="join">
+  <div class="wrap join-grid">
+    <div>
+      <h2>Join the beta</h2>
+      <p class="note">The first beta is small and invite-only on iPhone. Leave your details and we'll send you a TestFlight invite when your spot opens.</p>
+    </div>
+
+    <form id="waitlist" novalidate>
+      <div id="formBody">
+        <div class="field">
+          <label class="lbl" for="name">Name</label>
+          <input id="name" name="name" type="text" autocomplete="name" maxlength="60" required>
+        </div>
+        <div class="field">
+          <label class="lbl" for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" required>
+        </div>
+        <div class="field">
+          <label class="lbl" for="eaId">EA ID <span class="hint">(optional)</span></label>
+          <input id="eaId" name="eaId" type="text" autocapitalize="off" autocorrect="off" maxlength="40">
+        </div>
+        <fieldset>
+          <legend>Where do you play EA FC?</legend>
+          <div class="seg">
+            <label><input type="radio" name="platform" value="PlayStation" required><span>PlayStation</span></label>
+            <label><input type="radio" name="platform" value="Xbox"><span>Xbox</span></label>
+            <label><input type="radio" name="platform" value="PC"><span>PC</span></label>
+          </div>
+        </fieldset>
+        <label class="consent">
+          <input id="consent" type="checkbox" required>
+          <span>I'm 18 or older and agree that BetterPlayer stores these details to contact me about the beta. See the privacy notice below.</span>
+        </label>
+        <button class="go" type="submit" id="submitBtn">Join the beta</button>
+        <p class="msg" id="msg" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><span class="age">18+</span>BetterPlayer is for players aged 18 and over.</p>
+    <h4>Privacy notice</h4>
+    <p>We collect your name, email, EA ID and platform only to invite you to the BetterPlayer beta and send beta updates. Your details are stored with Google Firebase and are never sold or shared. You can ask to see or delete them at any time by writing to <a id="contactLink" href="#"></a>.</p>
+    <p>© <span id="year"></span> BetterPlayer</p>
+  </div>
+</footer>
+
+<script type="module">
+  // ── Settings you can edit ─────────────────────────────
+  const CONTACT_EMAIL = "your-email@example.com"; // replace with your real contact email
+
+  // ── Firebase: betterplayer-beta (web app betterplayer-web) ──
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCe7n1wfF3c7rUL3CAxbn7tPAX64IwG_yw",
+    authDomain: "betterplayer-beta.firebaseapp.com",
+    projectId: "betterplayer-beta",
+    storageBucket: "betterplayer-beta.firebasestorage.app",
+    messagingSenderId: "798229903614",
+    appId: "1:798229903614:web:3dedd76714170179438daf"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // ── Page setup ──
+  const link = document.getElementById("contactLink");
+  link.textContent = CONTACT_EMAIL;
+  link.href = "mailto:" + CONTACT_EMAIL;
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  const form = document.getElementById("waitlist");
+  const msg = document.getElementById("msg");
+  const btn = document.getElementById("submitBtn");
+  const emailOk = (v) => /^[^@ ]+@[^@ ]+[.][^@ ]+$/.test(v);
+
+  function showError(text, fieldId) {
+    msg.className = "msg err";
+    msg.textContent = text;
+    if (fieldId) document.getElementById(fieldId)?.focus();
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = form.name.value.trim();
+    const email = form.email.value.trim().toLowerCase();
+    const eaId = form.eaId.value.trim();
+    const platform = form.querySelector("input[name=platform]:checked")?.value;
+    const consent = document.getElementById("consent").checked;
+
+    if (!name) return showError("Enter your name.", "name");
+    if (!emailOk(email)) return showError("Enter a valid email, like name@gmail.com.", "email");
+    if (!platform) return showError("Choose where you play EA FC.");
+    if (!consent) return showError("Tick the box to confirm you're 18+ and agree to be contacted.", "consent");
+
+    btn.disabled = true;
+    btn.textContent = "Joining…";
+    msg.className = "msg";
+    msg.textContent = "";
+
+    try {
+      await addDoc(collection(db, "waitlist"), {
+        name, email, eaId, platform, consent: true, createdAt: serverTimestamp()
+      });
+      document.getElementById("formBody").innerHTML =
+        '<div class="done"><h3>You\'re on the list</h3><p>We\'ll email <strong></strong> when your beta spot opens.</p></div>';
+      document.querySelector("#formBody strong").textContent = email;
+    } catch (err) {
+      console.error(err);
+      btn.disabled = false;
+      btn.textContent = "Join the beta";
+      if (err?.code === "permission-denied") {
+        showError("Signup was rejected. Check your name and email, then try again.");
+      } else {
+        showError("Couldn't reach the server. Check your connection and try again.");
+      }
+    }
+  });
+</script>
+</body>
+</html>
