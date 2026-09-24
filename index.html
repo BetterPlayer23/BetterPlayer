@@ -21,7 +21,8 @@
     --body: "Barlow", "Helvetica Neue", Arial, sans-serif;
   }
   * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   body {
     margin: 0;
     background: var(--pitch-deep);
@@ -46,7 +47,13 @@
   header.top { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
   .brand { font-family: var(--display); font-weight: 900; font-size: 1.75rem; letter-spacing: .01em; }
   .brand span { color: var(--flood); }
-  .beta-tag { font-weight: 600; font-size: .875rem; color: var(--pitch-deep); background: var(--flood); padding: 4px 10px; border-radius: 3px; }
+  .beta-tag { font-weight: 600; font-size: .95rem; color: var(--pitch-deep); background: var(--flood); padding: 8px 14px; border-radius: 4px; text-decoration: none; }
+  .cta {
+    display: inline-block; margin-top: 28px; font-family: var(--display); font-weight: 900; font-size: 1.5rem; text-transform: uppercase;
+    background: var(--flood); color: #10231B; text-decoration: none; border-radius: 6px; padding: 12px 28px;
+  }
+  .beta-tag:focus-visible, .cta:focus-visible { outline: 3px solid var(--chalk); outline-offset: 3px; }
+  #join { scroll-margin-top: 16px; }
 
   .hero { display: grid; gap: 40px; padding: 24px 0 64px; align-items: center; }
   @media (min-width: 860px) { .hero { grid-template-columns: 1.1fr .9fr; padding: 48px 0 96px; } }
@@ -146,13 +153,14 @@
   <div class="wrap">
     <header class="top">
       <div class="brand">Better<span>Player</span></div>
-      <div class="beta-tag">Free beta</div>
+      <a class="beta-tag" href="#join">Join the beta</a>
     </header>
 
     <div class="hero">
       <div>
         <h1>Bet on your own game</h1>
         <p class="lede">Challenge another player to an EA FC 1v1. You both put in credits, you play, and the winner takes the pot. The beta uses free credits only, no real money.</p>
+        <a class="cta" href="#join">Join the beta</a>
       </div>
 
       <div class="board" role="img" aria-label="Example match: You 2, Rival 1. Stake 2 credits each, winner takes 3.20 credits.">
